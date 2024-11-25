@@ -1,5 +1,7 @@
 package main
 
+// version 0.0.3
+
 import (
     "fmt"
     "log"
