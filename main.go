@@ -1,6 +1,10 @@
 package main
 
+<<<<<<< HEAD
+//test
+=======
 // test
+>>>>>>> 0e212275b7ffbc4f34f89aa2055aa313a9d88571
 
 import (
         "fmt"
