@@ -21,12 +21,12 @@ jobs:
         runs-on: ubuntu-latest
         needs: checkout_code
         steps:
-            - name: Checkout repository
+            - name: Setup go
               uses: actions/checkout@v4
             - uses: actions/setup-go@v5
               with:
                 go-version: '1.22'
-                
+
             - name: golangci-lint
               uses: golangci/golangci-lint-action@v6
               with:
@@ -46,20 +46,24 @@ jobs:
               run: echo "VERSION=${GITHUB_REF_NAME##*/}" >> $GITHUB_ENV  
 
             - name: Build Docker Image
-              run: docker build -t hivebox:${{ env.VERSION }} .
+              uses: actions/checkout@v4
+            - run: docker build -f Dockerfile -t hivebox:${{ env.VERSION }} .
             
     test:
         runs-on: ubuntu-latest
         needs: build
         steps:
             - name: Run unit tests
-              run: go test ./... -v
+              uses: actions/checkout@v4
+            - run: go test ./... -v
 
             - name: Test /version endpoint
-              run: |
+              uses: actions/checkout@v4
+            -  run: |
                 docker run -d -p 8080:8080 hivebox:${{ env.VERSION }}
                 sleep 5
                 curl http://localhost:8080/version
             
             - name: Clean up Docker images
-              run: docker rmi hivebox:${{ env.VERSION }}
+              uses: actions/checkout@v4
+            -  run: docker rmi hivebox:${{ env.VERSION }}
