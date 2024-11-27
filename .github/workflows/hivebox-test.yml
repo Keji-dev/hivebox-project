@@ -21,18 +21,14 @@ jobs:
         runs-on: ubuntu-latest
         needs: checkout_code
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
             - uses: actions/setup-go@v5
               with:
                 go-version: '1.22'
+                
             - name: golangci-lint
               uses: golangci/golangci-lint-action@v6
               with:
                 version: latest    
-
-            # - name: Lint Go code
-            #   run: go fmt .
 
             - name: Lint Dockerfile
               uses: hadolint/hadolint-action@v3.1.0
