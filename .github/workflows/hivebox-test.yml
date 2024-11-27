@@ -40,6 +40,15 @@ jobs:
 
           - name: Build Docker Image
             run: docker build -f Dockerfile -t hivebox:latest .
+
+          - name: Save Docker Image as Artifact
+            run: docker save hivebox:latest -o hivebox.tar
+
+          - name: Upload Docker Image Artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: hivebox-image
+              path: hivebox.tar    
             
     test:
       runs-on: ubuntu-latest
@@ -47,6 +56,11 @@ jobs:
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
+
+        - name: Download Docker Image Artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: hivebox-image
 
         - name: Run unit tests
           run: go test ./... -v
