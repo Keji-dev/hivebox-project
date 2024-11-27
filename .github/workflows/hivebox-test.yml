@@ -62,6 +62,9 @@ jobs:
           with:
             name: hivebox-image
 
+        - name: Load Docker Image
+          run: docker load -i hivebox.tar
+          
         - name: Run unit tests
           run: go test ./... -v
 
