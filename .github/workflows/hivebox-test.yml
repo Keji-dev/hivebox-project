@@ -22,7 +22,7 @@ jobs:
         needs: checkout_code
         steps:
             - name: Lint Go code
-              run: go fmt .
+              run: go fmt ./...
 
             - name: Lint Dockerfile
               uses: hadolint/hadolint-action@v3.1.0

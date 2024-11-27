@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN go mod init 
+
 RUN go mod tidy
 
 RUN go build -o hivebox .
