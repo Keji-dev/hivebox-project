@@ -4,7 +4,7 @@ on:
       tags:
         - 'v*'
       branches:
-        - 'v*'  
+        - 'release/v*'  
 jobs:
     checkout_code:
       runs-on: ubuntu-latest
