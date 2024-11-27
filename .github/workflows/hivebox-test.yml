@@ -11,6 +11,9 @@ jobs:
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
+        
+        - name: List contents of the repo
+          run: ls -l
 
     lint:
         runs-on: ubuntu-latest
