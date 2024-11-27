@@ -64,7 +64,7 @@ jobs:
 
         - name: Load Docker Image
           run: docker load -i hivebox.tar
-          
+
         - name: Run unit tests
           run: go test ./... -v
 
@@ -73,6 +73,3 @@ jobs:
             docker run -d -p 8080:8080 hivebox:latest
             sleep 5
             curl http://localhost:8080/version
-
-        - name: Clean up Docker images
-          run: docker rmi hivebox:latest
