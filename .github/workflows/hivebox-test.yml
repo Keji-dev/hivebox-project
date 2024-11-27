@@ -1,0 +1,51 @@
+name: HiveBox CI
+on:
+    push:
+      tags:
+        - 'v*'
+      branches:
+        - 'v*'  
+jobs:
+    checkout_code:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          run: actions/checkout@v4
+
+    lint:
+        runs-on: ubuntu-latest
+        needs: checkout_code
+        steps:
+            - name: Lint Go code
+              run: go fmt ./...
+
+            - name: Lint Dockerfile
+              uses: hadolint/hadolint-action@v3.1.0
+              with:
+                dockerfile: Dockerfile
+
+    build:
+        runs-on: ubuntu-latest
+        needs: lint
+        steps:
+            - name: Extract version from tag/branch
+              run: echo "VERSION=${GITHUB_REF_NAME##*/}" >> $GITHUB_ENV  
+
+            - name: Build Docker Image
+              run: docker build -t hivebox:${{ env.VERSION }} .
+            
+    test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Run unit tests
+              run: go test ./... -v
+
+            - name: Test /version endpoint
+              run: |
+                docker run -d -p 8080:8080 hivebox:${{ env.VERSION }}
+                sleep 5
+                curl http://localhost:8080/version
+            
+            - name: Clean up Docker images
+              run: docker rmi hivebox:${{ env.VERSION }}
