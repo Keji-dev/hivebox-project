@@ -4,13 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod init 
+RUN go mod tidy && go build -o hivebox .
 
-RUN go mod tidy
-
-RUN go build -o hivebox .
-
-FROM alpine:latest
+FROM alpine:3.20
 
 RUN apk --no-cache add ca-certificates
 
