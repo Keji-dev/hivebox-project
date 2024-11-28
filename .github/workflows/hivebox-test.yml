@@ -5,6 +5,7 @@ on:
         - 'release/*'
         - 'testing/*'
         - 'feature/*'
+        - 'dev'
         
     pull_request:
       types:
