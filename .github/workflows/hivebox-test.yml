@@ -1,10 +1,22 @@
 name: HiveBox CI
 on:
     push:
-      tags:
-        - 'v*'
       branches:
+<<<<<<< HEAD
         - 'release/v*'  
+=======
+        - 'release/*'
+        - 'testing/*'
+        - 'feature/*'
+    pull_request:
+      types:
+        - opened
+        - closed
+      paths-ignore:
+        - README.md
+      branches:
+        - main      
+>>>>>>> main
 jobs:
 
     lint:
