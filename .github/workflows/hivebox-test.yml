@@ -7,7 +7,6 @@ on:
         - 'feature/*'
     pull_request:
       types:
-        - opened
         - closed
       paths-ignore:
         - README.md
