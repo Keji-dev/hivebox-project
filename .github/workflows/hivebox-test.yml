@@ -9,6 +9,8 @@ on:
     pull_request:
       branches:
         - main
+      branches-ignore:
+      - 'release/*'
       paths-ignore:
         - README.md
     
