@@ -8,8 +8,8 @@ on:
         - 'dev'
         
     pull_request:
-      types:
-        - closed
+      branches:
+        - main
       paths-ignore:
         - README.md
     
