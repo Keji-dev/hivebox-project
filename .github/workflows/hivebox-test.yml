@@ -9,7 +9,6 @@ on:
     pull_request:
       types:
         - closed
-        - opened
       paths-ignore:
         - README.md
       branches:
