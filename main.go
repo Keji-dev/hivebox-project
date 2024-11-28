@@ -1,7 +1,7 @@
 package main
 
 // version 0.1.2
-// adding a comment5
+// adding a comment6
 
 import (
     "fmt"
