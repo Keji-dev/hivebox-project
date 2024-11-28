@@ -4,20 +4,24 @@ on:
       tags:
         - 'v*'
       branches:
-        - 'v*'  
+        - 'release/v*'  
 jobs:
-    checkout_code:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout repository
-          run: actions/checkout@v4
 
     lint:
         runs-on: ubuntu-latest
-        needs: checkout_code
         steps:
-            - name: Lint Go code
-              run: go fmt ./...
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup Go and lint  
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.22'
+
+            - name: Run golangci-lint
+              uses: golangci/golangci-lint-action@v6
+              with:
+                version: latest    
 
             - name: Lint Dockerfile
               uses: hadolint/hadolint-action@v3.1.0
@@ -28,24 +32,44 @@ jobs:
         runs-on: ubuntu-latest
         needs: lint
         steps:
-            - name: Extract version from tag/branch
-              run: echo "VERSION=${GITHUB_REF_NAME##*/}" >> $GITHUB_ENV  
+          - name: Checkout repository
+            uses: actions/checkout@v4
 
-            - name: Build Docker Image
-              run: docker build -t hivebox:${{ env.VERSION }} .
+          - name: Extract version from tag/branch
+            run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV  
+
+          - name: Build Docker Image
+            run: docker build -f Dockerfile -t hivebox:latest .
+
+          - name: Save Docker Image as Artifact
+            run: docker save hivebox:latest -o hivebox.tar
+
+          - name: Upload Docker Image Artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: hivebox-image
+              path: hivebox.tar    
             
     test:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-            - name: Run unit tests
-              run: go test ./... -v
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-            - name: Test /version endpoint
-              run: |
-                docker run -d -p 8080:8080 hivebox:${{ env.VERSION }}
-                sleep 5
-                curl http://localhost:8080/version
-            
-            - name: Clean up Docker images
-              run: docker rmi hivebox:${{ env.VERSION }}
+        - name: Download Docker Image Artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: hivebox-image
+
+        - name: Load Docker Image
+          run: docker load -i hivebox.tar
+
+        - name: Run unit tests
+          run: go test ./... -v
+
+        - name: Test /version endpoint
+          run: |
+            docker run -d -p 8080:8080 hivebox:latest
+            sleep 5
+            curl http://localhost:8080/version
