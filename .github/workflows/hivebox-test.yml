@@ -5,17 +5,12 @@ on:
         - 'release/*'
         - 'testing/*'
         - 'feature/*'
-        - 'dev'
-        
-    pull_request:
-      types:
-        - closed
+        - 'dev/'
+        - main
       paths-ignore:
         - README.md
-      branches:
-        - main      
-jobs:
 
+jobs:
     lint:
         runs-on: ubuntu-latest
         steps:
