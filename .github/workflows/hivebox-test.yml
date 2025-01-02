@@ -56,6 +56,7 @@ jobs:
             VERSION="dev-${GITHUB_SHA}"  
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=VERSION::$VERSION"
 
       - name: Build Docker Image
         run: |
@@ -70,8 +71,8 @@ jobs:
       - name: Upload Docker Image Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hivebox-image
-          path: "hivebox_$VERSION.tar"
+          name: hivebox-image-${{ steps.extract_version.outputs.VERSION }}
+          path: "hivebox_${{ steps.extract_version.outputs.VERSION }}.tar"
 
   test:
     runs-on: ubuntu-latest
@@ -83,17 +84,17 @@ jobs:
       - name: Download Docker Image Artifact
         uses: actions/download-artifact@v4
         with:
-          name: hivebox-image
+          name: hivebox-image-${{ needs.build.outputs.VERSION }}
 
       - name: Load Docker Image
-        run: docker load -i "hivebox_${{ steps.extract_version.outputs.VERSION }}.tar"
+        run: docker load -i "hivebox_${{ needs.build.outputs.VERSION }}.tar"
 
       - name: Run unit tests
         run: go test ./... -v
 
       - name: Test /version endpoint
         env:
-          VERSION: ${{ steps.extract_version.outputs.VERSION }}
+          VERSION: ${{ needs.build.outputs.VERSION }}
         run: |
           docker run -d -p 8080:8080 "hivebox:$VERSION"
 
