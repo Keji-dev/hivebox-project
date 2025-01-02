@@ -6,7 +6,6 @@ on:
         - 'testing/*'
         - 'feature/*'
         - 'dev'
-        - main
       paths-ignore:
         - README.md
 
