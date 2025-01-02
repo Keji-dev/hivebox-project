@@ -75,5 +75,20 @@ jobs:
         - name: Test /version endpoint
           run: |
             docker run -d -p 8080:8080 hivebox:latest
-            sleep 5
-            curl http://localhost:8080/version
+
+            TIMEOUT=300
+            TIME_ELAPSED=0
+
+            until curl -s http://localhost:8080/versionl; do
+              if [ $T"IME_ELAPSED -ge $TIMEOUT ]; then
+                echo "[ERROR] Timeout reached after $TIMEOUT seconds, stopping the pipeline..."
+                exit 1
+              fi
+
+              echo "[INFO] Waiting for hivebox container..."
+              sleep 5
+              TIME_ELAPSED=$((TIME_ELAPSED + 5))
+
+            done
+
+            echo "[OK] /version test has been completed succesfully"
