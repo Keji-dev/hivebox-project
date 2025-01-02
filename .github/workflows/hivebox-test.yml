@@ -48,6 +48,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract version from tag/branch
+        id: extract_version
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF##refs/tags/}  
@@ -64,13 +65,13 @@ jobs:
       - name: Save Docker Image as Artifact
         run: |
           echo "Saving Docker image as artifact"
-          docker save "hivebox:$VERSION" -o hivebox.tar
+          docker save "hivebox:$VERSION" -o "hivebox_$VERSION.tar"
 
       - name: Upload Docker Image Artifact
         uses: actions/upload-artifact@v4
         with:
           name: hivebox-image
-          path: hivebox.tar
+          path: "hivebox_$VERSION.tar"
 
   test:
     runs-on: ubuntu-latest
@@ -85,12 +86,14 @@ jobs:
           name: hivebox-image
 
       - name: Load Docker Image
-        run: docker load -i hivebox.tar
+        run: docker load -i "hivebox_${{ steps.extract_version.outputs.VERSION }}.tar"
 
       - name: Run unit tests
         run: go test ./... -v
 
       - name: Test /version endpoint
+        env:
+          VERSION: ${{ steps.extract_version.outputs.VERSION }}
         run: |
           docker run -d -p 8080:8080 "hivebox:$VERSION"
 
