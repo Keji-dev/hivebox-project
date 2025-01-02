@@ -1,6 +1,6 @@
 package main
 
-// test comment 3
+// test comment v0.0.3
 
 import (
     "fmt"
