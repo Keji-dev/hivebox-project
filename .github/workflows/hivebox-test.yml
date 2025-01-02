@@ -79,8 +79,8 @@ jobs:
             TIMEOUT=300
             TIME_ELAPSED=0
 
-            until curl -s http://localhost:8080/versionl; do
-              if [ $T"IME_ELAPSED -ge $TIMEOUT ]; then
+            until curl -s http://localhost:8080/version; do
+              if [ $TIME_ELAPSED -ge $TIMEOUT ]; then
                 echo "[ERROR] Timeout reached after $TIMEOUT seconds, stopping the pipeline..."
                 exit 1
               fi
@@ -91,4 +91,4 @@ jobs:
 
             done
 
-            echo "[OK] /version test has been completed succesfully"
+            echo "[OK] /version test has been completed successfully"
