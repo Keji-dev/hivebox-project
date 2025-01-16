@@ -44,9 +44,6 @@ jobs:
           - name: Checkout repository
             uses: actions/checkout@v4
 
-          - name: Extract version from tag/branch
-            run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV  
-
           - name: Build Docker Image
             run: docker build -f Dockerfile -t hivebox:latest .
 
@@ -74,9 +71,6 @@ jobs:
         - name: Load Docker Image
           run: docker load -i hivebox.tar
 
-        - name: Run unit tests
-          run: go test ./... -v
-
         - name: Test /version endpoint
           run: |
             docker run -d -p 8080:8080 hivebox:latest
@@ -97,3 +91,6 @@ jobs:
             done
 
             echo "[OK] /version test has been completed successfully"
+
+        - name: Run unit tests
+          run: go test ./... -v
